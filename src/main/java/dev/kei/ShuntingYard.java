@@ -3,21 +3,18 @@ package dev.kei;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
-import java.util.StringTokenizer;
 
-/**
- * calc CLI also a parser that can perform mathematical calculations and written in Java.
- */
-public class App
-{
-    private static final String OPERATOR_PATTERN = "+-*/()";
+public class ShuntingYard {
 
-    public static void main( String[] args )
-    {
-        System.out.println("Result : " + evaluatePostfix(infixToPostfix(args[0])));
+    private final String OPERATOR_PATTERN;
+    private final Tokenizer tokenizer;
+
+    public ShuntingYard(final String OPERATOR_PATTERN, Tokenizer tokenizer) {
+        this.OPERATOR_PATTERN = OPERATOR_PATTERN;
+        this.tokenizer = tokenizer;
     }
 
-    private static double evaluatePostfix(List<String> postfix ) {
+    public double evaluatePostfix(List<String> postfix ) {
         Stack<Double> values = new Stack<>();
         for (String token : postfix) {
             if (isNumber(token)) {
@@ -48,10 +45,10 @@ public class App
         return values.pop();
     }
 
-    private static List<String> infixToPostfix(String expression) {
+    public List<String> infixToPostfix(String expression) {
         Stack<String> operators = new Stack<>();
         List<String> output = new ArrayList<>();
-        List<String> tokens = tokenize(expression);
+        List<String> tokens = tokenizer.tokenize(expression);
 
         for (String token : tokens) {
             if (isNumber(token)) {
@@ -78,19 +75,7 @@ public class App
         return output;
     }
 
-    private static List<String> tokenize(String expression) {
-        List<String> tokens = new ArrayList<>();
-        StringTokenizer tokenizer = new StringTokenizer(expression, OPERATOR_PATTERN, true);
-        while (tokenizer.hasMoreTokens()) {
-            String token = tokenizer.nextToken().trim();
-            if (!token.isEmpty()) {
-                tokens.add(token);
-            }
-        }
-        return tokens;
-    }
-
-    private static boolean isNumber(String token) {
+    private boolean isNumber(String token) {
         try {
             Double.parseDouble(token);
             return true;
@@ -99,11 +84,11 @@ public class App
         }
     }
 
-    private static boolean isOperator(String token) {
+    private boolean isOperator(String token) {
         return OPERATOR_PATTERN.contains(token);
     }
 
-    private static int precedence(String operator) {
+    private int precedence(String operator) {
         switch (operator) {
             case "+":
             case "-":
