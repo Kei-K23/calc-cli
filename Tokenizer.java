@@ -1,5 +1,3 @@
-// File: dev/kei/Tokenizer.java
-package dev.kei;
 
 import java.util.ArrayList;
 import java.util.List;
