@@ -14,12 +14,15 @@ public class ShuntingYard {
         this.tokenizer = tokenizer;
     }
 
-    public double evaluatePostfix(List<String> postfix ) {
+    public double evaluatePostfix(List<String> postfix) {
         Stack<Double> values = new Stack<>();
         for (String token : postfix) {
             if (isNumber(token)) {
                 values.push(Double.parseDouble(token));
             } else if (isOperator(token)) {
+                if (values.size() < 2) {
+                    throw new IllegalArgumentException("Invalid postfix expression");
+                }
                 double v2 = values.pop();
                 double v1 = values.pop();
                 double result = 0;
@@ -37,10 +40,13 @@ public class ShuntingYard {
                         result = v1 / v2;
                         break;
                     default:
-                        throw new IllegalArgumentException("Invalid postfix");
+                        throw new IllegalArgumentException("Invalid operator in postfix expression");
                 }
                 values.push(result);
             }
+        }
+        if (values.size() != 1) {
+            throw new IllegalArgumentException("Invalid postfix expression");
         }
         return values.pop();
     }
@@ -54,17 +60,19 @@ public class ShuntingYard {
             if (isNumber(token)) {
                 output.add(token);
             } else if (isOperator(token)) {
-                while (!operators.isEmpty() && precedence(operators.peek()) >= precedence(token)) {
+                while (!operators.isEmpty() && !operators.peek().equals("(") && precedence(operators.peek()) >= precedence(token)) {
                     output.add(operators.pop());
                 }
                 operators.push(token);
             } else if (token.equals("(")) {
                 operators.push(token);
             } else if (token.equals(")")) {
-                while (!operators.peek().equals("(")) {
+                while (!operators.isEmpty() && !operators.peek().equals("(")) {
                     output.add(operators.pop());
                 }
-                operators.pop();
+                if (!operators.isEmpty() && operators.peek().equals("(")) {
+                    operators.pop();
+                }
             }
         }
 

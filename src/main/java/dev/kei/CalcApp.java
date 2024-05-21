@@ -10,15 +10,25 @@ import java.util.StringTokenizer;
  */
 public class CalcApp
 {
-    private static final String OPERATOR_PATTERN = "+-*/()";
-
     public static void main( String[] args )
     {
-        String expression = args[0];
-        Tokenizer tokenizer = new Tokenizer(expression);
-        ShuntingYard shuntingYard = new ShuntingYard(OPERATOR_PATTERN, tokenizer);
-        List<String> postfix = shuntingYard.infixToPostfix(expression);
-        System.out.println("Result : " + shuntingYard.evaluatePostfix(postfix));
-    }
+        if (args.length != 1) {
+            System.out.println("Usage: java CalcApp <expression>");
+            return;
+        }
 
+        Tokenizer tokenizer = new Tokenizer("+-*/()");
+        ShuntingYard shuntingYard = new ShuntingYard("+-*/", tokenizer);
+
+        String expression = args[0];
+        List<String> postfix = shuntingYard.infixToPostfix(expression);
+        System.out.println("Postfix: " + postfix);
+
+        try {
+            double result = shuntingYard.evaluatePostfix(postfix);
+            System.out.println("Result: " + result);
+        } catch (IllegalArgumentException e) {
+            System.out.println("Error: " + e.getMessage());
+        }
+    }
 }
